@@ -1,0 +1,14 @@
+# Require maintainer review for every public playbook change.
+* @CooperBox
+
+# High-impact agent and framework files.
+AGENTS.md @CooperBox
+ARCHITECTURE_FROZEN.md @CooperBox
+docs/playbooks/ @CooperBox
+docs/registry/ @CooperBox
+docs/patterns/ @CooperBox
+docs/controls/ @CooperBox
+docs/evidence/ @CooperBox
+docs/strategy/ @CooperBox
+scripts/ @CooperBox
+.github/ @CooperBox
