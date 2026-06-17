@@ -4,7 +4,7 @@ Date: 2026-06-16
 
 ## Status
 
-The CooperBox AI Playbooks repository architecture is frozen for version 0.1.
+The AI Coding Playbooks repository architecture is frozen for version 0.1.
 
 This means the foundational structure should not be redesigned unless a fundamental defect is found.
 
@@ -89,7 +89,7 @@ Priority order:
 
 The repository now has enough structure to absorb thousands of principles, patterns, controls, and evidence items without collapsing into document sprawl.
 
-The strategic goal is to grow the CooperBox AI Engineering Body of Knowledge while preserving the ontology:
+The strategic goal is to grow the AI engineering body of knowledge while preserving the ontology:
 
 ```text
 Principle

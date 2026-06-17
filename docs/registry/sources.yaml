@@ -5,10 +5,10 @@ sources:
     location: docs/playbooks/
     date_added: 2026-06-16
     status: active
-    notes: Initial curated CooperBox AI engineering guidance used to derive the first registry records.
+    notes: Initial curated AI engineering guidance used to derive the first registry records.
 
   - source_id: SRC-0002
-    name: Initial CooperBox Playbooks
+    name: Initial AI Coding Playbooks
     type: curated_playbooks
     location: docs/playbooks/
     date_added: 2026-06-16

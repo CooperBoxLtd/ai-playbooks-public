@@ -1,4 +1,4 @@
-# CooperBox AI Engineering Playbooks
+# AI Coding Playbooks
 
 Reusable AI engineering playbooks for coding agents and AI-assisted software teams.
 

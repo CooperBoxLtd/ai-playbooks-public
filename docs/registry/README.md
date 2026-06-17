@@ -1,6 +1,6 @@
 # Principle Registry
 
-The principle registry is the source of truth for individual CooperBox AI Engineering principles.
+The principle registry is the source of truth for individual AI engineering principles.
 
 Purpose:
 - preserve principles as structured records

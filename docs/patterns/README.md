@@ -1,6 +1,6 @@
 # Pattern Library
 
-Patterns describe reusable ways to implement CooperBox principles.
+Patterns describe reusable ways to implement the principles in this repository.
 
 Principles tell teams what should be true. Patterns describe how to make it true.
 

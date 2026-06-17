@@ -1,6 +1,6 @@
 # Controls Library
 
-Controls describe how to prove that CooperBox principles and patterns are present.
+Controls describe how to prove that principles and patterns are present.
 
 Principles tell teams what should be true. Patterns tell teams how to implement it. Controls define how to verify or assess it.
 

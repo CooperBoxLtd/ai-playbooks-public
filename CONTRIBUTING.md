@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving the CooperBox AI Coding Playbooks.
+Thank you for improving the AI Coding Playbooks.
 
 This repository is for vendor-neutral AI engineering knowledge that can help coding agents and AI-assisted software teams work more safely and consistently.
 

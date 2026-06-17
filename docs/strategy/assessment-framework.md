@@ -21,7 +21,7 @@ This framework is vendor neutral. It can be implemented manually, by consulting 
 ## Relationship To Other Layers
 
 ```text
-CooperBox AI Engineering Playbooks
+AI Coding Playbooks
 -> AI Engineering Capability Model
 -> AI Engineering Assessment Framework
 -> Product Implementations
@@ -597,4 +597,4 @@ into:
 What evidence shows those capabilities exist, and how mature are they?
 ```
 
-This is the bridge between the CooperBox body of knowledge and any implementation that collects evidence automatically.
+This is the bridge between the body of knowledge and any implementation that collects evidence automatically.
