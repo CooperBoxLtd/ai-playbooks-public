@@ -1,6 +1,6 @@
-# CooperBox Codex Engineering Rules
+# AI Coding Agent Engineering Rules
 
-This repository follows the CooperBox AI Engineering Playbook. Codex must optimize for correctness, security, maintainability, observability, recovery, and cost control, not only speed of code generation.
+This repository follows the AI Coding Playbooks. Coding agents must optimize for correctness, security, maintainability, observability, recovery, and cost control, not only speed of code generation.
 
 ## Operating Sequence
 

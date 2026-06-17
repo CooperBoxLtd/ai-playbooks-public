@@ -1,6 +1,6 @@
 # Knowledge Harvesting
 
-Knowledge harvesting is the process for converting source material into structured CooperBox knowledge assets.
+Knowledge harvesting is the process for converting source material into structured AI engineering knowledge assets.
 
 The goal is to prevent document sprawl. New notes, reviews, workshops, case studies, and research should enrich the structured registry, pattern library, and controls library instead of creating unmanaged prose.
 

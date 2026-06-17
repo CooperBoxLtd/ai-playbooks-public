@@ -1,4 +1,4 @@
-# CooperBox Playbooks
+# AI Coding Playbooks
 
 These playbooks are the detailed reference layer for the concise rules in `../../AGENTS.md`.
 

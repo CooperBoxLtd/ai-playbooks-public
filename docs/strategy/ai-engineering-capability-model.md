@@ -13,7 +13,7 @@ It should not depend on any specific scanner, IDE extension, cloud provider, AI 
 Strategic structure:
 
 ```text
-CooperBox AI Engineering Playbooks
+AI Coding Playbooks
 -> AI Engineering Capability Model
 -> Assessment Model
 -> Product Implementations
@@ -541,6 +541,6 @@ Certification may become possible later only after the model has:
 
 ## Strategic Conclusion
 
-The AI Engineering Capability Model is the bridge between the CooperBox Playbooks and any product implementation.
+The AI Engineering Capability Model is the bridge between the playbooks and any product implementation.
 
 The playbooks define the body of knowledge. The capability model defines what mature AI engineering looks like. Assessment products collect evidence against the model. Benchmark data can eventually turn the model into industry intelligence.
