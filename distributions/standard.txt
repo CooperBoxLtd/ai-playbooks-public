@@ -1,0 +1,11 @@
+AGENTS.md
+docs/playbooks/README.md
+docs/playbooks/00-core-laws.md
+docs/playbooks/01-codex-operating-model.md
+docs/playbooks/02-production-stack.md
+docs/playbooks/03-security.md
+docs/playbooks/04-data-state.md
+docs/playbooks/05-ai-systems.md
+docs/playbooks/06-deployment-recovery.md
+docs/playbooks/07-observability.md
+docs/playbooks/08-cost-control.md

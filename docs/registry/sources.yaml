@@ -1,0 +1,16 @@
+sources:
+  - source_id: SRC-0001
+    name: Initial curated knowledge base
+    type: curated_knowledge_base
+    location: docs/playbooks/
+    date_added: 2026-06-16
+    status: active
+    notes: Initial curated CooperBox AI engineering guidance used to derive the first registry records.
+
+  - source_id: SRC-0002
+    name: Initial CooperBox Playbooks
+    type: curated_playbooks
+    location: docs/playbooks/
+    date_added: 2026-06-16
+    status: active
+    notes: First curated markdown playbooks.

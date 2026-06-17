@@ -1,0 +1,423 @@
+patterns:
+  - pattern_id: PAT-0001
+    name: Backend Proxy Pattern
+    status: active
+    summary: Route privileged provider calls through a backend service so secrets, authorization, quotas, and audit controls remain server-side.
+    problem: Frontend code cannot safely hold secrets or enforce security-critical decisions.
+    solution: Expose a backend endpoint that authenticates the user, authorizes the action, validates inputs, applies rate limits and quotas, calls the provider, records safe audit metadata, and returns only safe results.
+    primary_capability: Security
+    related_capabilities:
+      - Architecture
+      - Cost Governance
+      - Observability
+    principle_refs:
+      - P-0008
+      - P-0009
+      - P-0011
+    control_refs:
+      - CTRL-0001
+      - CTRL-0002
+    evidence_classes:
+      - Class A
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - backend
+      - proxy
+      - secrets
+      - authorization
+    tradeoffs:
+      - Adds backend implementation and operational responsibility.
+      - Requires careful API design to avoid becoming a generic unsafe pass-through.
+    failure_modes:
+      - Backend proxy calls provider but does not enforce authorization.
+      - Backend logs provider secrets or sensitive request payloads.
+      - Frontend still contains fallback provider keys.
+    assessment_hint: Look for server-side provider adapters, absence of client-side provider secrets, backend authorization checks, rate limits, and safe audit logs.
+
+  - pattern_id: PAT-0002
+    name: AI Gateway Pattern
+    status: active
+    summary: Centralize AI provider access behind a governed service boundary for routing, validation, observability, and cost controls.
+    problem: Scattered direct model calls make it difficult to enforce provider policy, output validation, prompt governance, usage attribution, and fallback behavior.
+    solution: Route AI calls through a local gateway or service module that handles provider selection, model routing, prompt/context rules, output validation, usage tracking, retries, and fallback.
+    primary_capability: AI Governance
+    related_capabilities:
+      - Architecture
+      - Cost Governance
+      - Observability
+      - Security
+    principle_refs:
+      - P-0004
+      - P-0011
+      - P-0012
+      - P-0013
+    control_refs:
+      - CTRL-0004
+      - CTRL-0005
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - gateway
+      - model-routing
+      - validation
+    tradeoffs:
+      - Adds abstraction that must be kept simple for early-stage products.
+      - May become a bottleneck if every AI use case is forced through one rigid interface.
+    failure_modes:
+      - Gateway centralizes calls but does not validate output.
+      - Gateway records sensitive prompts without redaction.
+      - Gateway is bypassed by direct provider SDK usage.
+    assessment_hint: Look for central AI service modules, provider adapters, prompt/context policy, output schemas, usage logging, and direct provider-call exceptions.
+
+  - pattern_id: PAT-0003
+    name: Tenant Isolation Pattern
+    status: active
+    summary: Enforce tenant or organization scope at data access boundaries, not only in the UI.
+    problem: Multi-tenant systems can leak data when tenant filtering is missing, inconsistent, or trusted from client input.
+    solution: Store tenant scope on tenant-owned records, derive tenant identity from trusted authentication/session context, enforce tenant filters in service/repository queries, and add tests or policies for isolation.
+    primary_capability: Data Governance
+    related_capabilities:
+      - Security
+      - Architecture
+    principle_refs:
+      - P-0008
+      - P-0009
+      - P-0010
+    control_refs:
+      - CTRL-0006
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - tenancy
+      - data
+      - authorization
+      - isolation
+    tradeoffs:
+      - Requires disciplined schema and query design.
+      - May require migration work for existing data.
+    failure_modes:
+      - Tenant ID is accepted directly from untrusted client input.
+      - Some exports, reports, jobs, or search paths bypass tenant filters.
+      - UI hides data but backend APIs do not enforce scope.
+    assessment_hint: Look for tenant/org columns, scoped repository functions, backend policy checks, RLS policies where applicable, and tenant-isolation tests.
+
+  - pattern_id: PAT-0004
+    name: Output Validation Pattern
+    status: active
+    summary: Treat AI and external-provider output as untrusted until it is validated against expected shape, policy, and downstream safety requirements.
+    problem: Raw model or provider output can be malformed, unsafe, policy-violating, or inappropriate for downstream systems.
+    solution: Define output contracts, validate returned data before display or use, reject or retry invalid outputs, and add fallback paths for validation failure.
+    primary_capability: AI Governance
+    related_capabilities:
+      - Security
+      - Delivery And CI/CD
+      - Operational Maturity
+    principle_refs:
+      - P-0001
+      - P-0008
+      - P-0013
+    control_refs:
+      - CTRL-0005
+    evidence_classes:
+      - Class A
+      - Class B
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - validation
+      - output-contracts
+      - safety
+    tradeoffs:
+      - Requires explicit schemas and failure handling.
+      - Can increase latency when retries are needed.
+    failure_modes:
+      - Output is parsed but not semantically validated.
+      - Invalid output silently falls back to unsafe defaults.
+      - Generated commands, queries, or patches are executed without human review.
+    assessment_hint: Look for schemas, validators, parse-failure handling, retry/degrade paths, tests for invalid output, and blocked execution of unvalidated generated actions.
+
+  - pattern_id: PAT-0005
+    name: Model Routing Pattern
+    status: active
+    summary: Route AI tasks to models based on task risk, complexity, cost, latency, and required quality rather than binding architecture to one model.
+    problem: A single-model design can be too expensive, too slow, too weak, or too brittle for varied AI workloads.
+    solution: Classify AI tasks, choose model/provider routes by task requirements, record usage and quality, and allow routing changes without rewriting business logic.
+    primary_capability: Cost Governance
+    related_capabilities:
+      - AI Governance
+      - Architecture
+      - Observability
+    principle_refs:
+      - P-0004
+      - P-0011
+      - P-0013
+    control_refs:
+      - CTRL-0004
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - model-routing
+      - cost
+      - providers
+    tradeoffs:
+      - Adds configuration and evaluation burden.
+      - Routing logic can become complex if not tied to clear task classes.
+    failure_modes:
+      - Expensive models are used for trivial tasks.
+      - Low-capability models are used for high-risk decisions.
+      - Routing is undocumented and cannot be audited.
+    assessment_hint: Look for task classification, model/provider configuration, routing policy, usage metrics, and quality/cost review.
+
+  - pattern_id: PAT-0006
+    name: Semantic Cache Pattern
+    status: active
+    summary: Cache repeated AI or provider work when correctness allows so the system does not repeatedly pay for identical or near-identical intelligence.
+    problem: AI and provider calls can create unnecessary cost and latency when repeated inputs produce stable outputs.
+    solution: Identify safe-to-cache tasks, define cache keys and invalidation rules, store outputs with scope and expiry, and avoid caching sensitive or context-specific data without controls.
+    primary_capability: Cost Governance
+    related_capabilities:
+      - AI Governance
+      - Security
+      - Data Governance
+    principle_refs:
+      - P-0011
+      - P-0013
+    control_refs:
+      - CTRL-0007
+    evidence_classes:
+      - Class A
+      - Class B
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - caching
+      - cost
+      - latency
+    tradeoffs:
+      - Cache invalidation and data scope must be handled carefully.
+      - Caching can leak tenant-specific or sensitive results if scoped incorrectly.
+    failure_modes:
+      - Private tenant outputs are cached globally.
+      - Cache keys ignore relevant context.
+      - Stale AI outputs are reused after policy or model changes.
+    assessment_hint: Look for AI/provider cache usage, cache scope, TTL, invalidation rules, tenant/user scoping, and cache hit-rate metrics.
+
+  - pattern_id: PAT-0007
+    name: Agent Orchestrator Pattern
+    status: active
+    summary: Use a bounded orchestrator to coordinate agent steps, tool permissions, approvals, and audit records.
+    problem: Agentic workflows can become unsafe when agents choose tools, execute actions, and persist memory without authority boundaries.
+    solution: Route agent actions through an orchestrator that defines task scope, allowed tools, approval gates, memory/context boundaries, audit logging, cost limits, and rollback behavior.
+    primary_capability: Agent Readiness
+    related_capabilities:
+      - AI Governance
+      - Security
+      - Cost Governance
+      - Operational Maturity
+    principle_refs:
+      - P-0002
+      - P-0003
+      - P-0013
+    control_refs:
+      - CTRL-0008
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - agents
+      - orchestration
+      - approvals
+      - audit
+    tradeoffs:
+      - Slower than unconstrained autonomous execution.
+      - Requires clear authority model and tool taxonomy.
+    failure_modes:
+      - Orchestrator delegates sensitive actions without approval.
+      - Agent memory stores sensitive context indefinitely.
+      - Audit trail records outcomes but not tool inputs or authority decisions.
+    assessment_hint: Look for agent role definitions, tool allow-lists, approval gates, audit logs, cost limits, and rollback controls.
+
+  - pattern_id: PAT-0008
+    name: Canary Deployment Pattern
+    status: active
+    summary: Release production changes to a limited audience or slice of traffic before broad rollout so failure impact is bounded and observable.
+    problem: Deploying a change to every user at once increases blast radius when the change is broken, slow, expensive, or operationally unsafe.
+    solution: Route a small percentage of users, tenants, regions, or requests to the new version, monitor defined health signals, then promote, pause, or roll back based on evidence.
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Observability
+      - Delivery And CI/CD
+      - Operational Maturity
+    principle_refs:
+      - P-0001
+      - P-0005
+      - P-0006
+      - P-0007
+    control_refs:
+      - CTRL-0003
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - deployment
+      - canary
+      - rollout
+      - rollback
+    tradeoffs:
+      - Requires routing, feature flag, or deployment infrastructure.
+      - Requires meaningful health metrics before rollout decisions are trustworthy.
+    failure_modes:
+      - Canary exists but monitors only process uptime, not user-impacting behavior.
+      - Promotion happens automatically without health gates.
+      - Rollback does not cover schema, configuration, or data changes.
+    assessment_hint: Look for staged rollout configuration, feature flags, deployment health checks, promotion gates, rollback steps, and release evidence.
+
+  - pattern_id: PAT-0009
+    name: Event Sourcing Pattern
+    status: active
+    summary: Store important business changes as immutable events so state can be audited, reconstructed, and reasoned about over time.
+    problem: Mutable current-state records can hide who changed what, when it changed, why it changed, and how to recover from incorrect state.
+    solution: Record append-only domain events for important state transitions, derive current state from events or projections, and preserve actor, timestamp, tenant, and context metadata.
+    primary_capability: Data Governance
+    related_capabilities:
+      - Operational Maturity
+      - Observability
+      - Deployment And Recovery
+    principle_refs:
+      - P-0001
+      - P-0010
+      - P-0012
+    control_refs: []
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - events
+      - audit
+      - data
+      - recovery
+    tradeoffs:
+      - Adds modeling and projection complexity.
+      - Not every table or workflow deserves event sourcing.
+    failure_modes:
+      - Events are mutable or incomplete.
+      - Events omit actor, tenant, or correlation context.
+      - Projections are not rebuildable or testable.
+    assessment_hint: Look for append-only event records, event metadata, projection rebuild paths, audit reporting, and tests around state reconstruction.
+
+  - pattern_id: PAT-0010
+    name: Async Job Pattern
+    status: active
+    summary: Move long-running, expensive, retryable, or failure-prone work out of request/response paths into managed background jobs.
+    problem: Heavy processing inside request handlers causes timeouts, duplicate work, poor user experience, and weak recovery when work fails partway through.
+    solution: Accept the request, create a job record, process it asynchronously with status tracking, retries, idempotency, ownership, and user-visible completion or failure state.
+    primary_capability: Architecture
+    related_capabilities:
+      - Deployment And Recovery
+      - Observability
+      - Cost Governance
+      - Operational Maturity
+    principle_refs:
+      - P-0005
+      - P-0006
+      - P-0007
+      - P-0011
+      - P-0012
+    control_refs: []
+    evidence_classes:
+      - Class A
+      - Class B
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - jobs
+      - async
+      - queues
+      - recovery
+    tradeoffs:
+      - Adds job state, queue infrastructure, and operational monitoring.
+      - Requires idempotency and duplicate-handling discipline.
+    failure_modes:
+      - Jobs retry unsafe non-idempotent operations.
+      - Users cannot see job status or failure reason.
+      - Queue backlog is not monitored.
+      - Job ownership or tenant scope is not enforced.
+    assessment_hint: Look for job records, queues/workers, status fields, retries, idempotency keys, tenant/user ownership, dead-letter handling, and queue metrics.
+
+  - pattern_id: PAT-0011
+    name: Read Replica Pattern
+    status: active
+    summary: Route read-heavy or analytical workloads to replica or derived read stores so primary transactional systems remain protected.
+    problem: Reporting, search, analytics, exports, and high-volume reads can overload the primary database or create noisy-neighbor risk.
+    solution: Use read replicas, materialized views, search indexes, or derived read models for appropriate workloads, with explicit consistency expectations and fallback behavior.
+    primary_capability: Architecture
+    related_capabilities:
+      - Data Governance
+      - Cost Governance
+      - Observability
+      - Deployment And Recovery
+    principle_refs:
+      - P-0004
+      - P-0006
+      - P-0010
+      - P-0011
+      - P-0012
+    control_refs: []
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - database
+      - read-replica
+      - scaling
+      - reporting
+    tradeoffs:
+      - Adds eventual consistency and operational complexity.
+      - Can increase cost if used before there is a real read bottleneck.
+    failure_modes:
+      - Reads that require strong consistency are routed to stale replicas.
+      - Tenant or authorization filters are weaker in derived stores.
+      - Replica lag is not monitored.
+      - Primary failover behavior is undocumented.
+    assessment_hint: Look for read/write separation, replica configuration, reporting/query routing, consistency documentation, replica lag monitoring, and tenant-scope enforcement on read paths.

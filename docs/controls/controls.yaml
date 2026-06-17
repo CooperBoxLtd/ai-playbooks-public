@@ -1,0 +1,519 @@
+controls:
+  - control_id: CTRL-0001
+    name: No Secrets In Browser
+    status: active
+    summary: Client-side code and bundles must not contain server-only API keys, provider keys, tokens, or secrets.
+    control_type: technical
+    primary_capability: Security
+    related_capabilities:
+      - Architecture
+    principle_refs:
+      - P-0008
+      - P-0009
+    pattern_refs:
+      - PAT-0001
+    evidence_class: Class A
+    evidence:
+      - Client source search shows no server-only secrets.
+      - Built client bundle search shows no server-only secrets.
+      - Privileged provider calls are routed through backend services.
+    assessment_method: Inspect frontend source, built assets, environment variable usage, and provider call sites.
+    pass_criteria:
+      - No server-only key is present in frontend source or bundle.
+      - Frontend calls backend APIs rather than privileged provider APIs directly.
+    fail_criteria:
+      - API keys, tokens, or secrets are visible in client-side code.
+      - Frontend directly calls privileged provider APIs requiring server credentials.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - secrets
+      - frontend
+      - security
+    automation_hint: Search frontend source and bundles for secret-like names and direct privileged provider endpoints.
+
+  - control_id: CTRL-0002
+    name: Backend Authorization Enforcement
+    status: active
+    summary: Protected actions must enforce authorization on the backend at the resource or workflow boundary.
+    control_type: technical
+    primary_capability: Security
+    related_capabilities:
+      - Data Governance
+      - Architecture
+    principle_refs:
+      - P-0008
+      - P-0009
+      - P-0010
+    pattern_refs:
+      - PAT-0001
+      - PAT-0003
+    evidence_class: Class A
+    evidence:
+      - Backend route or service checks authenticated actor.
+      - Backend route or service checks role, ownership, tenant, or workflow permission.
+      - Tests cover unauthorized access attempts.
+    assessment_method: Inspect protected routes, service functions, policy modules, repository access, and authorization tests.
+    pass_criteria:
+      - Sensitive backend actions enforce authorization independent of frontend controls.
+      - Authorization uses trusted server-side identity and resource context.
+    fail_criteria:
+      - Backend relies only on hidden UI controls.
+      - Tenant, owner, role, or workflow permission is missing on sensitive actions.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - authorization
+      - backend
+      - access-control
+    automation_hint: Identify protected routes and check for policy/middleware calls before sensitive operations.
+
+  - control_id: CTRL-0003
+    name: Rollback Validation
+    status: active
+    summary: Production-facing changes must have a documented and validated rollback or recovery path.
+    control_type: operational
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Delivery And CI/CD
+      - Operational Maturity
+    principle_refs:
+      - P-0005
+      - P-0006
+      - P-0007
+    pattern_refs: []
+    evidence_class: Class B
+    evidence:
+      - Release runbook includes rollback steps.
+      - Migration plan describes reversal or repair.
+      - Recovery procedure has been tested or reviewed.
+    assessment_method: Inspect release docs, deployment workflows, migration notes, incident runbooks, and release evidence.
+    pass_criteria:
+      - Rollback or recovery path is documented for production-facing changes.
+      - Data repair or migration recovery is considered where relevant.
+    fail_criteria:
+      - No rollback or recovery path exists.
+      - Rollback covers code only while data/configuration remains unrecoverable.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - rollback
+      - recovery
+      - deployment
+    manual_review_hint: Confirm whether rollback steps have actually been tested for the current environment.
+
+  - control_id: CTRL-0004
+    name: AI Cost Limits
+    status: active
+    summary: AI and provider usage must have limits, attribution, and monitoring to prevent uncontrolled spend.
+    control_type: technical
+    primary_capability: Cost Governance
+    related_capabilities:
+      - AI Governance
+      - Observability
+    principle_refs:
+      - P-0011
+      - P-0013
+    pattern_refs:
+      - PAT-0002
+      - PAT-0005
+    evidence_class: Class A
+    evidence:
+      - Rate limits or quotas exist for AI endpoints.
+      - Token or request usage is tracked.
+      - Usage is attributed to user, tenant, job, or feature where practical.
+      - Expensive model use is routed intentionally.
+    assessment_method: Inspect AI gateway/provider code, rate-limit configuration, usage logging, model routing policy, and billing/usage reports.
+    pass_criteria:
+      - AI calls are protected by quota, rate limit, or budget controls.
+      - Usage is observable and attributable.
+    fail_criteria:
+      - Public or weakly protected endpoint can trigger paid AI calls without control.
+      - Token/request usage is not tracked.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - cost
+      - rate-limits
+      - quotas
+    automation_hint: Detect AI provider call sites and verify associated rate-limit, quota, and usage-recording paths.
+
+  - control_id: CTRL-0005
+    name: AI Output Validation
+    status: active
+    summary: AI output must be validated before display, storage, execution, or downstream use.
+    control_type: technical
+    primary_capability: AI Governance
+    related_capabilities:
+      - Security
+      - Delivery And CI/CD
+    principle_refs:
+      - P-0001
+      - P-0008
+      - P-0013
+    pattern_refs:
+      - PAT-0002
+      - PAT-0004
+    evidence_class: Class A
+    evidence:
+      - Output schemas or validators exist.
+      - Invalid output triggers retry, rejection, or safe fallback.
+      - Tests cover malformed or unsafe AI output.
+    assessment_method: Inspect AI response handlers, schemas, validators, tests, and downstream execution paths.
+    pass_criteria:
+      - Structured AI output is schema-validated.
+      - Unsafe generated actions require validation and approval before execution.
+    fail_criteria:
+      - Raw AI output is directly executed, stored, or displayed in sensitive contexts without validation.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - validation
+      - output
+      - safety
+    automation_hint: Detect AI response parsing and check for schema validation or explicit validation gates.
+
+  - control_id: CTRL-0006
+    name: Tenant Isolation Verification
+    status: active
+    summary: Tenant-owned data access must be scoped and verified through backend policy, repository filters, RLS, or equivalent controls.
+    control_type: technical
+    primary_capability: Data Governance
+    related_capabilities:
+      - Security
+    principle_refs:
+      - P-0008
+      - P-0009
+      - P-0010
+    pattern_refs:
+      - PAT-0003
+    evidence_class: Class A
+    evidence:
+      - Tenant-owned records include tenant or organization scope.
+      - Queries filter by trusted tenant context.
+      - Tests or policies verify cross-tenant access is blocked.
+    assessment_method: Inspect schema, repository functions, backend policies, RLS policies, exports, background jobs, search paths, and tenant-isolation tests.
+    pass_criteria:
+      - Tenant scope is enforced at data access boundaries.
+      - Untrusted client tenant IDs are not sufficient for authorization.
+    fail_criteria:
+      - Data access by ID lacks tenant or ownership scope.
+      - Reports, exports, jobs, or search bypass tenant boundaries.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - tenant
+      - isolation
+      - data
+      - authorization
+    automation_hint: Trace data reads/writes for tenant-owned models and verify tenant filters from trusted context.
+
+  - control_id: CTRL-0007
+    name: AI Cache Scope Control
+    status: active
+    summary: Cached AI or provider outputs must include scope, expiry, and invalidation rules appropriate to the data sensitivity and context.
+    control_type: technical
+    primary_capability: Cost Governance
+    related_capabilities:
+      - AI Governance
+      - Data Governance
+      - Security
+    principle_refs:
+      - P-0011
+      - P-0013
+    pattern_refs:
+      - PAT-0006
+    evidence_class: Class A
+    evidence:
+      - Cache keys include relevant context and scope.
+      - Tenant/user-specific outputs are not cached globally.
+      - Cache TTL or invalidation is defined.
+    assessment_method: Inspect AI/provider cache implementation, key construction, TTL, invalidation, and tenant/user scoping.
+    pass_criteria:
+      - Cached outputs are scoped correctly and expire or invalidate safely.
+      - Sensitive outputs are not stored in broad shared caches without controls.
+    fail_criteria:
+      - Tenant-specific AI output is globally cached.
+      - Cache keys ignore context that changes correctness or authorization.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - caching
+      - cost
+      - data-scope
+    manual_review_hint: Review whether cached output could expose private context or stale policy decisions.
+
+  - control_id: CTRL-0008
+    name: Agent Tool Approval
+    status: active
+    summary: Agent workflows must require explicit approval or policy authorization before sensitive tool use.
+    control_type: governance
+    primary_capability: Agent Readiness
+    related_capabilities:
+      - Security
+      - AI Governance
+      - Cost Governance
+    principle_refs:
+      - P-0002
+      - P-0003
+      - P-0013
+    pattern_refs:
+      - PAT-0007
+    evidence_class: Class C
+    evidence:
+      - Agent authority levels are documented.
+      - Sensitive tools require approval or policy checks.
+      - Agent actions are audited.
+      - Rollback or manual intervention path exists.
+    assessment_method: Inspect agent orchestration code, tool registry, approval policies, audit logs, and operational runbooks.
+    pass_criteria:
+      - Sensitive tool use is gated by policy or human approval.
+      - Agent actions are attributable and auditable.
+    fail_criteria:
+      - Agents can execute broad file, deployment, payment, data, or provider actions without approval.
+      - Agent tool use is not logged.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - agents
+      - tools
+      - approvals
+      - audit
+    automation_hint: Inspect tool registry and execution paths for approval checks on sensitive tools.
+
+  - control_id: CTRL-0009
+    name: Dependency Scanning Enabled
+    status: active
+    summary: Project dependencies must be checked for known vulnerabilities through an automated or repeatable scanning process.
+    control_type: technical
+    primary_capability: Security
+    related_capabilities:
+      - Delivery And CI/CD
+      - Operational Maturity
+    principle_refs:
+      - P-0001
+      - P-0008
+    pattern_refs: []
+    evidence_class: Class A
+    evidence:
+      - Dependency scanning workflow or service is configured.
+      - Dependency manifests and lockfiles are present.
+      - Vulnerability results are reviewed or gated in CI where appropriate.
+    assessment_method: Inspect CI workflows, dependency manifests, lockfiles, Dependabot or equivalent configuration, package audit scripts, and security reports.
+    pass_criteria:
+      - Dependency scanning runs automatically or through a documented repeatable process.
+      - Findings are visible to maintainers and tracked to remediation.
+    fail_criteria:
+      - Dependencies are used without any vulnerability scanning evidence.
+      - Scan results exist but are ignored with no triage process.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - dependencies
+      - scanning
+      - security
+      - ci
+    automation_hint: Detect package manifests and verify configured dependency scanning workflows, scheduled checks, or audit scripts.
+
+  - control_id: CTRL-0010
+    name: Prompt Versioning Enabled
+    status: active
+    summary: Prompts used in important AI workflows must be versioned or otherwise traceable so behavior changes can be reviewed and rolled back.
+    control_type: governance
+    primary_capability: AI Governance
+    related_capabilities:
+      - Delivery And CI/CD
+      - Observability
+      - Deployment And Recovery
+    principle_refs:
+      - P-0001
+      - P-0013
+      - P-0014
+    pattern_refs:
+      - PAT-0002
+    evidence_class: Class C
+    evidence:
+      - Prompt templates are stored in version control or a versioned registry.
+      - AI outputs can be linked to prompt version, model, and provider.
+      - Prompt changes follow review or release process for important workflows.
+    assessment_method: Inspect prompt storage, AI gateway metadata, report output, evaluation tests, and release/change history for prompt changes.
+    pass_criteria:
+      - Important prompts are traceable to versions.
+      - Prompt changes can be reviewed and rolled back.
+    fail_criteria:
+      - Prompts are edited ad hoc with no version history.
+      - AI incidents cannot identify which prompt version produced the output.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai
+      - prompts
+      - versioning
+      - traceability
+    manual_review_hint: Confirm whether prompts embedded in provider dashboards or databases are also versioned and reviewable.
+
+  - control_id: CTRL-0011
+    name: Cost Monitoring Enabled
+    status: active
+    summary: Expensive cloud, provider, and AI operations must be monitored with usage visibility and actionable cost signals.
+    control_type: operational
+    primary_capability: Cost Governance
+    related_capabilities:
+      - Observability
+      - AI Governance
+    principle_refs:
+      - P-0011
+      - P-0012
+    pattern_refs:
+      - PAT-0002
+      - PAT-0005
+      - PAT-0006
+    evidence_class: Class B
+    evidence:
+      - Usage metrics exist for expensive operations.
+      - AI token/request usage is tracked where applicable.
+      - Cost or quota alerts exist for meaningful thresholds.
+      - Usage can be attributed to feature, user, tenant, job, or provider where practical.
+    assessment_method: Inspect metrics, logs, billing exports, provider dashboards, quota configuration, alert rules, and usage records.
+    pass_criteria:
+      - Expensive operations have visible usage metrics.
+      - Cost thresholds or anomaly signals are monitored.
+    fail_criteria:
+      - Paid operations can grow without visibility.
+      - No owner can identify which feature, tenant, or job generated spend.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - cost
+      - monitoring
+      - ai-spend
+      - observability
+    automation_hint: Look for token usage records, request counters, quota tables, billing export integrations, and alert configuration.
+
+  - control_id: CTRL-0012
+    name: Backup Restore Tested
+    status: active
+    summary: Backups are not sufficient unless restore behavior is documented and tested for important data and systems.
+    control_type: operational
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Data Governance
+      - Operational Maturity
+    principle_refs:
+      - P-0005
+      - P-0006
+      - P-0007
+      - P-0010
+    pattern_refs: []
+    evidence_class: Class B
+    evidence:
+      - Backup process is documented.
+      - Restore process is documented.
+      - Restore test or recovery drill evidence exists.
+      - Recovery point and recovery time expectations are defined for important systems.
+    assessment_method: Inspect backup configuration, restore runbooks, recovery drill notes, incident records, and data recovery procedures.
+    pass_criteria:
+      - Important data has backup and restore evidence.
+      - Restore has been tested or reviewed within a defined interval.
+    fail_criteria:
+      - Backups exist but no restore path is documented.
+      - Restore process is unknown or untested for critical data.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - backup
+      - restore
+      - recovery
+      - data
+    manual_review_hint: Confirm restore evidence includes data integrity checks, not only backup job success.
+
+  - control_id: CTRL-0013
+    name: Rate Limiting Enabled
+    status: active
+    summary: Expensive, sensitive, authentication, upload, webhook, and AI endpoints must have server-side rate limits or equivalent abuse controls.
+    control_type: technical
+    primary_capability: Security
+    related_capabilities:
+      - Cost Governance
+      - AI Governance
+      - Operational Maturity
+    principle_refs:
+      - P-0008
+      - P-0011
+    pattern_refs:
+      - PAT-0001
+      - PAT-0002
+    evidence_class: Class A
+    evidence:
+      - Server-side rate-limit middleware or gateway policy exists.
+      - Limits apply to expensive or abuse-prone endpoints.
+      - Rate-limit events are logged or observable.
+    assessment_method: Inspect API middleware, gateway configuration, route protection, quota tables, usage counters, and abuse-prevention logs.
+    pass_criteria:
+      - Sensitive or expensive endpoints have server-side limits.
+      - Limits cannot be bypassed by client-side changes.
+    fail_criteria:
+      - Public endpoint can trigger expensive or sensitive work without limit.
+      - Rate limiting exists only in frontend code.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - rate-limits
+      - abuse
+      - cost
+      - security
+    automation_hint: Detect known web routes and verify rate-limit middleware or gateway policies on high-risk paths.
+
+  - control_id: CTRL-0014
+    name: Canary Deployment Enabled
+    status: active
+    summary: High-risk production changes should support staged rollout with health checks, promotion gates, and rollback behavior.
+    control_type: operational
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Observability
+      - Delivery And CI/CD
+    principle_refs:
+      - P-0001
+      - P-0005
+      - P-0006
+      - P-0007
+    pattern_refs:
+      - PAT-0008
+    evidence_class: Class B
+    evidence:
+      - Deployment process supports staged rollout, feature flags, or limited traffic exposure.
+      - Health signals are defined before promotion.
+      - Rollback behavior is documented.
+    assessment_method: Inspect deployment workflows, feature flag configuration, release runbooks, health checks, monitoring dashboards, and release evidence.
+    pass_criteria:
+      - High-risk changes can be exposed gradually.
+      - Promotion and rollback decisions are tied to observable health signals.
+    fail_criteria:
+      - Every production deploy reaches all users at once with no staged control.
+      - Canary exists but no health gate or rollback path exists.
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - canary
+      - deployment
+      - rollout
+      - recovery
+    manual_review_hint: Confirm canary health signals measure user-impacting behavior, not only process uptime.

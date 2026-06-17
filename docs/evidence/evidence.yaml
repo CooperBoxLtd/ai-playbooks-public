@@ -1,0 +1,473 @@
+evidence:
+  - evidence_id: EVID-0001
+    name: Dependency Scan Workflow
+    status: active
+    summary: A CI, scheduled workflow, or dependency service checks dependencies for known vulnerabilities.
+    evidence_type: file_or_workflow
+    primary_capability: Security
+    control_refs:
+      - CTRL-0009
+    confidence_when_found: Confirmed
+    detection:
+      mode: automated
+      examples:
+        - .github/workflows/dependency-scan.yml
+        - .github/workflows/codeql.yml
+        - .github/dependabot.yml
+        - snyk.yml
+        - renovate.json
+    file_globs:
+      - .github/workflows/*.yml
+      - .github/workflows/*.yaml
+      - .github/dependabot.yml
+      - snyk.yml
+      - renovate.json
+      - package.json
+      - pnpm-lock.yaml
+      - package-lock.json
+      - requirements.txt
+      - pyproject.toml
+    keywords:
+      - npm audit
+      - pnpm audit
+      - yarn audit
+      - pip-audit
+      - snyk
+      - dependabot
+      - renovate
+      - codeql
+    positive_signals:
+      - Workflow or service runs dependency vulnerability scanning.
+      - Dependency update automation is configured.
+      - Package audit script exists and is used in CI or documented process.
+    missing_signal: No dependency scanning workflow, dependency update automation, or repeatable package audit process was found.
+    human_review:
+      required: false
+
+  - evidence_id: EVID-0002
+    name: Secret Scan Or Secret Boundary Evidence
+    status: active
+    summary: The repository contains evidence that secrets are scanned for or kept out of client-side code.
+    evidence_type: file_or_workflow
+    primary_capability: Security
+    control_refs:
+      - CTRL-0001
+    confidence_when_found: Likely
+    detection:
+      mode: semi_automated
+      examples:
+        - .github/workflows/secret-scan.yml
+        - gitleaks.toml
+        - trufflehog configuration
+        - backend provider adapter with server-side environment variables
+    file_globs:
+      - .github/workflows/*.yml
+      - .github/workflows/*.yaml
+      - gitleaks.toml
+      - .gitleaks.toml
+      - "**/*.env.example"
+      - "**/*.ts"
+      - "**/*.js"
+    keywords:
+      - gitleaks
+      - trufflehog
+      - secretlint
+      - process.env
+      - import.meta.env
+      - NEXT_PUBLIC
+      - VITE_
+    positive_signals:
+      - Secret scanning workflow or config exists.
+      - Provider keys are read only in backend/server modules.
+      - Public environment variables are not used for server-only keys.
+    negative_signals:
+      - Secret-like values appear in frontend source.
+      - Server-only provider keys use public client environment prefixes.
+    missing_signal: No secret scanning or clear server-side secret boundary evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0003
+    name: Backend Authorization Middleware Or Policy
+    status: active
+    summary: Protected backend actions use middleware, policy modules, or service-level authorization checks.
+    evidence_type: code_pattern
+    primary_capability: Security
+    control_refs:
+      - CTRL-0002
+    confidence_when_found: Likely
+    detection:
+      mode: semi_automated
+      examples:
+        - auth middleware on protected routes
+        - policy module checks ownership, role, tenant, or workflow permission
+        - service method rejects unauthorized actor
+    file_globs:
+      - "**/*auth*.*"
+      - "**/*policy*.*"
+      - "**/*middleware*.*"
+      - "**/*route*.*"
+      - "**/*controller*.*"
+    keywords:
+      - authorize
+      - requireRole
+      - requireUser
+      - canRead
+      - canWrite
+      - tenantId
+      - ownerId
+      - policy
+    positive_signals:
+      - Protected routes call authorization middleware.
+      - Service methods check actor permission against resource context.
+      - Policy modules centralize authorization decisions.
+    negative_signals:
+      - Backend handler mutates protected resource with no policy check.
+      - Authorization depends only on client-provided role or tenant value.
+    missing_signal: No backend authorization middleware or policy evidence was found for protected actions.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0004
+    name: Tenant Isolation Test Or Policy
+    status: active
+    summary: Tests, policies, or database rules verify tenant-owned data cannot be accessed across tenant boundaries.
+    evidence_type: test
+    primary_capability: Data Governance
+    control_refs:
+      - CTRL-0006
+    confidence_when_found: Confirmed
+    detection:
+      mode: semi_automated
+      examples:
+        - tenant isolation tests
+        - RLS policy definitions
+        - repository tests for cross-tenant access denial
+    file_globs:
+      - "**/*tenant*test*.*"
+      - "**/*tenant*.spec.*"
+      - "**/*rls*.*"
+      - "**/*policy*.*"
+      - "**/migrations/*"
+    keywords:
+      - tenant isolation
+      - cross-tenant
+      - row level security
+      - rls
+      - organization_id
+      - tenant_id
+      - orgId
+      - tenantId
+    positive_signals:
+      - Cross-tenant access denial test exists.
+      - RLS policies enforce tenant scope.
+      - Repository queries derive tenant scope from trusted context.
+    negative_signals:
+      - Data access by ID lacks tenant or owner scope.
+      - Tenant ID is accepted directly from untrusted client input.
+    missing_signal: No tenant isolation test, RLS policy, or equivalent tenant-boundary evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0005
+    name: AI Output Schema Validation
+    status: active
+    summary: AI outputs are validated against schemas, validators, or explicit contracts before downstream use.
+    evidence_type: code_pattern
+    primary_capability: AI Governance
+    control_refs:
+      - CTRL-0005
+    confidence_when_found: Confirmed
+    detection:
+      mode: automated
+      examples:
+        - zod schema for model output
+        - JSON schema validation
+        - parser with explicit failure handling
+    file_globs:
+      - "**/*ai*.*"
+      - "**/*llm*.*"
+      - "**/*model*.*"
+      - "**/*schema*.*"
+      - "**/*validator*.*"
+    keywords:
+      - z.object
+      - JSONSchema
+      - validate
+      - safeParse
+      - schema
+      - output contract
+      - parse failure
+    positive_signals:
+      - AI response is validated before use.
+      - Invalid output has retry, rejection, or fallback behavior.
+      - Tests cover malformed AI output.
+    negative_signals:
+      - Raw AI text is executed, stored, or passed downstream without validation.
+      - Parse errors are swallowed and unsafe defaults are used.
+    missing_signal: No AI output validation schema, parser, or explicit output contract was found.
+    human_review:
+      required: false
+
+  - evidence_id: EVID-0006
+    name: Prompt Version Traceability
+    status: active
+    summary: Important AI prompts are versioned or traceable to a change history.
+    evidence_type: configuration
+    primary_capability: AI Governance
+    control_refs:
+      - CTRL-0010
+    confidence_when_found: Likely
+    detection:
+      mode: semi_automated
+      examples:
+        - prompt templates in version control
+        - prompt registry with version field
+        - AI logs include prompt version
+    file_globs:
+      - "**/*prompt*.*"
+      - "**/*template*.*"
+      - "**/*ai*.*"
+      - "**/*llm*.*"
+    keywords:
+      - promptVersion
+      - prompt_version
+      - promptId
+      - templateVersion
+      - prompts/
+      - prompt registry
+    positive_signals:
+      - Prompt templates are stored in version-controlled files.
+      - AI calls record prompt version or prompt ID.
+      - Prompt changes are reviewed with normal code changes.
+    missing_signal: No prompt versioning or prompt traceability evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0007
+    name: AI Usage And Cost Telemetry
+    status: active
+    summary: AI calls record usage signals such as provider, model, request count, token count, cost, user, tenant, job, or feature.
+    evidence_type: code_pattern
+    primary_capability: Cost Governance
+    control_refs:
+      - CTRL-0004
+      - CTRL-0011
+    confidence_when_found: Confirmed
+    detection:
+      mode: automated
+      examples:
+        - token usage stored after provider response
+        - AI request counter
+        - per-tenant usage table
+    file_globs:
+      - "**/*usage*.*"
+      - "**/*billing*.*"
+      - "**/*quota*.*"
+      - "**/*ai*.*"
+      - "**/*llm*.*"
+    keywords:
+      - tokenCount
+      - total_tokens
+      - usage
+      - quota
+      - rateLimit
+      - model
+      - provider
+      - cost
+    positive_signals:
+      - Provider response usage is recorded.
+      - AI usage is attributed to user, tenant, job, or feature.
+      - Quota or budget logic references recorded usage.
+    missing_signal: No AI usage, token, quota, or cost telemetry evidence was found.
+    human_review:
+      required: false
+
+  - evidence_id: EVID-0008
+    name: Rate Limit Middleware Or Gateway Policy
+    status: active
+    summary: Sensitive or expensive endpoints have server-side rate limiting or equivalent abuse controls.
+    evidence_type: code_pattern
+    primary_capability: Security
+    control_refs:
+      - CTRL-0013
+      - CTRL-0004
+    confidence_when_found: Confirmed
+    detection:
+      mode: automated
+      examples:
+        - rate limit middleware
+        - API gateway throttling policy
+        - quota check before paid provider call
+    file_globs:
+      - "**/*rate*limit*.*"
+      - "**/*quota*.*"
+      - "**/*middleware*.*"
+      - "**/*gateway*.*"
+      - "**/*route*.*"
+    keywords:
+      - rateLimit
+      - rate_limit
+      - throttle
+      - quota
+      - maxRequests
+      - retryAfter
+      - abuse
+    positive_signals:
+      - Server-side rate-limit middleware protects high-risk routes.
+      - Quota check occurs before expensive provider calls.
+      - Rate-limit events are logged or observable.
+    negative_signals:
+      - Rate limits exist only in frontend code.
+      - Paid provider call is reachable without authentication or limit.
+    missing_signal: No server-side rate limiting or quota evidence was found for sensitive or expensive endpoints.
+    human_review:
+      required: false
+
+  - evidence_id: EVID-0009
+    name: Rollback Runbook
+    status: active
+    summary: Release or operations documentation explains how to roll back code, configuration, data, or migration changes.
+    evidence_type: documentation
+    primary_capability: Deployment And Recovery
+    control_refs:
+      - CTRL-0003
+    confidence_when_found: Requires Human Review
+    detection:
+      mode: manual
+      examples:
+        - docs/release/rollback.md
+        - docs/operations/recovery.md
+        - runbooks/rollback.md
+    file_globs:
+      - "**/*rollback*.md"
+      - "**/*recovery*.md"
+      - "**/*runbook*.md"
+      - "**/*release*.md"
+    keywords:
+      - rollback
+      - roll back
+      - recovery
+      - restore
+      - migration rollback
+      - incident
+    positive_signals:
+      - Rollback steps are documented.
+      - Configuration and data repair are considered.
+      - Validation after rollback is described.
+    missing_signal: No rollback or recovery runbook evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0010
+    name: Backup Restore Validation Record
+    status: active
+    summary: Documentation or operational records show that restore behavior has been tested or reviewed.
+    evidence_type: documentation
+    primary_capability: Deployment And Recovery
+    control_refs:
+      - CTRL-0012
+    confidence_when_found: Requires Human Review
+    detection:
+      mode: manual
+      examples:
+        - restore-test.md
+        - backup-validation-report.md
+        - disaster-recovery-drill.md
+    file_globs:
+      - "**/*backup*.md"
+      - "**/*restore*.md"
+      - "**/*recovery*.md"
+      - "**/*drill*.md"
+    keywords:
+      - backup
+      - restore
+      - recovery point
+      - recovery time
+      - RPO
+      - RTO
+      - drill
+    positive_signals:
+      - Restore process has been tested or reviewed.
+      - Recovery point and recovery time expectations are documented.
+      - Data integrity checks are included.
+    missing_signal: No backup restore validation evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0011
+    name: Canary Or Staged Rollout Configuration
+    status: active
+    summary: Deployment configuration supports staged rollout, limited exposure, feature flags, or canary release.
+    evidence_type: configuration
+    primary_capability: Deployment And Recovery
+    control_refs:
+      - CTRL-0014
+    confidence_when_found: Likely
+    detection:
+      mode: semi_automated
+      examples:
+        - feature flag configuration
+        - canary deployment workflow
+        - traffic split configuration
+    file_globs:
+      - "**/*deploy*.*"
+      - "**/*release*.*"
+      - "**/*feature*flag*.*"
+      - "**/*canary*.*"
+      - ".github/workflows/*.yml"
+      - ".github/workflows/*.yaml"
+    keywords:
+      - canary
+      - staged rollout
+      - feature flag
+      - traffic split
+      - percentage rollout
+      - blue green
+      - promote
+    positive_signals:
+      - Deployment can target a subset of users, tenants, traffic, or environments.
+      - Promotion depends on health or review gates.
+      - Rollback behavior is documented.
+    missing_signal: No canary, staged rollout, or feature-flag rollout evidence was found.
+    human_review:
+      required: true
+
+  - evidence_id: EVID-0012
+    name: Agent Tool Approval Gate
+    status: active
+    summary: Agent or automation tool execution requires policy authorization or human approval for sensitive actions.
+    evidence_type: code_pattern
+    primary_capability: Agent Readiness
+    control_refs:
+      - CTRL-0008
+    confidence_when_found: Likely
+    detection:
+      mode: semi_automated
+      examples:
+        - tool registry with approval requirement
+        - human approval before file, deployment, payment, or data action
+        - audit log for agent tool calls
+    file_globs:
+      - "**/*agent*.*"
+      - "**/*tool*.*"
+      - "**/*approval*.*"
+      - "**/*orchestrator*.*"
+    keywords:
+      - requiresApproval
+      - approvalRequired
+      - toolPolicy
+      - agent
+      - orchestrator
+      - audit
+      - sandbox
+    positive_signals:
+      - Sensitive tools have approval flags or policy checks.
+      - Agent tool calls are audited.
+      - Tool execution is scoped by authority level.
+    negative_signals:
+      - Agents can execute broad actions without approval.
+      - Tool use has no audit trail.
+    missing_signal: No agent tool approval or tool policy evidence was found.
+    human_review:
+      required: true

@@ -1,0 +1,432 @@
+principles:
+  - principle_id: P-0001
+    name: Verification Creates Trust
+    summary: AI generation does not create trust. Important outputs must be verified through tests, deterministic checks, review, monitoring, or operational validation.
+    type: law
+    status: active
+    primary_capability: Delivery And CI/CD
+    related_capabilities:
+      - Security
+      - Observability
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 01-codex-operating-model
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - verification
+      - trust
+      - evidence
+      - validation
+    assessment_hint: Look for tests, CI checks, validation scripts, review gates, monitoring, release evidence, and explicit reporting of skipped checks.
+
+  - principle_id: P-0002
+    name: Humans Own Intent
+    summary: Humans define goals, constraints, requirements, acceptance criteria, and accountability. AI may assist or implement, but it does not own responsibility.
+    type: law
+    status: active
+    primary_capability: Operational Maturity
+    related_capabilities:
+      - AI Governance
+      - Agent Readiness
+    playbooks:
+      - 00-core-laws
+      - 01-codex-operating-model
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - accountability
+      - intent
+      - governance
+      - human-review
+    assessment_hint: Look for documented ownership, review requirements, approval gates, acceptance criteria, and human decision points for AI-assisted work.
+
+  - principle_id: P-0003
+    name: Governance Before Automation
+    summary: Do not automate an unclear or uncontrolled process. Understand, document, control, and measure a process before increasing its speed with automation.
+    type: law
+    status: active
+    primary_capability: Operational Maturity
+    related_capabilities:
+      - Agent Readiness
+      - AI Governance
+      - Delivery And CI/CD
+    playbooks:
+      - 00-core-laws
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - governance
+      - automation
+      - process
+      - control
+    assessment_hint: Look for documented workflows, approval gates, audit trails, process owners, and measurement before automation or agent execution.
+
+  - principle_id: P-0004
+    name: Complexity Must Be Earned
+    summary: Complexity should be introduced only when current requirements justify it. Avoid speculative architecture, unnecessary abstractions, and future-proofing without evidence.
+    type: law
+    status: active
+    primary_capability: Architecture
+    related_capabilities:
+      - Cost Governance
+      - Delivery And CI/CD
+    playbooks:
+      - 00-core-laws
+      - 01-codex-operating-model
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - architecture
+      - complexity
+      - simplicity
+      - pragmatism
+    assessment_hint: Look for unnecessary services, abstractions, dependencies, queues, distributed components, or generalized frameworks not justified by current requirements.
+
+  - principle_id: P-0005
+    name: Production Is Sacred
+    summary: Production is not a playground. Production-facing changes require validation, controlled deployment, configuration discipline, and a recovery path.
+    type: law
+    status: active
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Delivery And CI/CD
+      - Observability
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 06-deployment-recovery
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - production
+      - deployment
+      - recovery
+      - validation
+    assessment_hint: Look for release gates, deployment runbooks, rollback instructions, environment separation, migration discipline, and production monitoring.
+
+  - principle_id: P-0006
+    name: Every System Fails
+    summary: Systems must assume dependency failure, network failure, provider failure, human error, bad inputs, and partial outages.
+    type: law
+    status: active
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Architecture
+      - Observability
+      - AI Governance
+    playbooks:
+      - 00-core-laws
+      - 06-deployment-recovery
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - failure
+      - resilience
+      - recovery
+      - fallback
+    assessment_hint: Look for timeouts, retries, fallbacks, circuit breakers, queue recovery, provider outage behavior, and incident procedures.
+
+  - principle_id: P-0007
+    name: Recovery Is More Important Than Prevention
+    summary: Prevention matters, but every important system also needs a way to recover from failure, bad deployment, data corruption, and provider outage.
+    type: law
+    status: active
+    primary_capability: Deployment And Recovery
+    related_capabilities:
+      - Data Governance
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 06-deployment-recovery
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - recovery
+      - rollback
+      - backup
+      - resilience
+    assessment_hint: Look for rollback procedures, backup verification, restore tests, migration recovery, incident playbooks, and post-failure repair workflows.
+
+  - principle_id: P-0008
+    name: Security Is A System Property
+    summary: Security must be designed across architecture, APIs, data, identity, logging, deployment, and operations. It cannot be added as a final cleanup pass.
+    type: law
+    status: active
+    primary_capability: Security
+    related_capabilities:
+      - Architecture
+      - Data Governance
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 03-security
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - security
+      - system-design
+      - controls
+      - defense-in-depth
+    assessment_hint: Look for security controls across code, infrastructure, data access, CI/CD, logging, support, and incident response.
+
+  - principle_id: P-0009
+    name: The Frontend Is Not Trusted
+    summary: The frontend may improve usability, but it must not be the only place where authorization, secrets, pricing, entitlement, or security-critical logic is enforced.
+    type: rule
+    status: active
+    primary_capability: Security
+    related_capabilities:
+      - Architecture
+      - Data Governance
+    playbooks:
+      - 03-security
+      - 02-production-stack
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - frontend
+      - authorization
+      - trust-boundary
+      - backend
+    assessment_hint: Look for protected backend checks on every sensitive route and absence of secrets or enforcement-only logic in client bundles.
+
+  - principle_id: P-0010
+    name: Data Has Ownership
+    summary: Every important piece of data should have an owner, scope, lifecycle, retention expectation, and recovery or deletion path.
+    type: law
+    status: active
+    primary_capability: Data Governance
+    related_capabilities:
+      - Security
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 04-data-state
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - data
+      - ownership
+      - lifecycle
+      - retention
+    assessment_hint: Look for owner fields, tenant scope, audit records, retention docs, deletion workflows, and data recovery procedures.
+
+  - principle_id: P-0011
+    name: Cost Is An Engineering Metric
+    summary: AI, cloud, storage, and provider operations convert usage into spend. Expensive operations need attribution, limits, and controls.
+    type: law
+    status: active
+    primary_capability: Cost Governance
+    related_capabilities:
+      - AI Governance
+      - Architecture
+      - Observability
+    playbooks:
+      - 00-core-laws
+      - 08-cost-control
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - cost
+      - quotas
+      - rate-limits
+      - ai-spend
+    assessment_hint: Look for rate limits, quotas, usage attribution, token tracking, model routing, caching, budgets, and spend alerts.
+
+  - principle_id: P-0012
+    name: Observability Is Mandatory
+    summary: If a system cannot be observed, it cannot be operated reliably. Production systems need logs, metrics, alerts, diagnostics, and incident evidence.
+    type: law
+    status: active
+    primary_capability: Observability
+    related_capabilities:
+      - Deployment And Recovery
+      - Operational Maturity
+      - AI Governance
+    playbooks:
+      - 00-core-laws
+      - 07-observability
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class B
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - observability
+      - logging
+      - metrics
+      - incidents
+    assessment_hint: Look for structured logs, metrics, tracing, alerts, correlation IDs, diagnostic workflows, and AI/provider usage telemetry.
+
+  - principle_id: P-0013
+    name: AI Changes Generation, Not Responsibility
+    summary: AI can change how software is generated, reviewed, and operated, but it does not remove engineering responsibility for correctness, security, compliance, or production impact.
+    type: law
+    status: active
+    primary_capability: AI Governance
+    related_capabilities:
+      - Operational Maturity
+      - Delivery And CI/CD
+    playbooks:
+      - 00-core-laws
+      - 05-ai-systems
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - ai-governance
+      - responsibility
+      - human-review
+      - accountability
+    assessment_hint: Look for AI review policies, validation gates, generated-code review, ownership records, and explicit human approval for high-impact AI outputs.
+
+  - principle_id: P-0014
+    name: Architecture Outlives Code
+    summary: Individual code can be rewritten quickly, but architectural decisions shape cost, security, operations, and change velocity over time.
+    type: principle
+    status: active
+    primary_capability: Architecture
+    related_capabilities:
+      - Cost Governance
+      - Deployment And Recovery
+      - Operational Maturity
+    playbooks:
+      - 00-core-laws
+      - 02-production-stack
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class A
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - architecture
+      - decisions
+      - maintainability
+      - systems
+    assessment_hint: Look for architecture decisions, dependency boundaries, provider abstractions, migration paths, and documented tradeoffs.
+
+  - principle_id: P-0015
+    name: Build Measure Learn Scale
+    summary: Build the smallest useful version, measure real behavior, learn from evidence, then scale. Do not scale before validation.
+    type: law
+    status: active
+    primary_capability: Operational Maturity
+    related_capabilities:
+      - Observability
+      - Cost Governance
+      - Architecture
+    playbooks:
+      - 00-core-laws
+    maturity_levels:
+      - all
+    evidence_classes:
+      - Class B
+      - Class C
+    confidence: high
+    source_refs:
+      - SRC-0001
+      - SRC-0002
+    tags:
+      - scale
+      - validation
+      - measurement
+      - product-learning
+    assessment_hint: Look for staged rollout, product metrics, feedback loops, operational metrics, and evidence-driven scaling decisions.
