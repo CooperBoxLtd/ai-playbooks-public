@@ -15,33 +15,52 @@ Use these playbooks with coding agents that support repository instructions, inc
 - `docs/strategy/ai-engineering-capability-model.md`: vendor-neutral capability model.
 - `docs/strategy/assessment-framework.md`: vendor-neutral assessment framework.
 
-## Quick Start
+## How To Use This
 
-Clone this repository and install the standard profile into your project:
+There are two common ways to use these playbooks.
 
-```powershell
-.\scripts\install-profile.ps1 -TargetRepo D:\Dev\repos\YourProject -Profile standard
-```
+### Option 1: Minimal
 
-This copies `AGENTS.md` and the playbooks into the target repository.
+Copy `AGENTS.md` into the root of your project repository.
 
-## Install Into A Project
+Use this when you only want concise coding-agent rules.
 
-Minimal profile:
+### Option 2: Standard
 
-```powershell
-.\scripts\install-profile.ps1 -TargetRepo D:\Dev\repos\YourProject -Profile minimal
-```
-
-Standard profile:
+Install `AGENTS.md` and the detailed playbooks into your project repository:
 
 ```powershell
 .\scripts\install-profile.ps1 -TargetRepo D:\Dev\repos\YourProject -Profile standard
 ```
 
-Profiles:
-- `minimal`: `AGENTS.md` only.
-- `standard`: `AGENTS.md` plus human-readable playbooks.
+Use this when you want the coding agent to have both short operating rules and detailed references for security, data, AI systems, deployment, observability, and cost control.
+
+After installation, review the diff and commit the copied files into your project repository.
+
+When you start a coding-agent session in that project, the agent should read `AGENTS.md` and follow the rules. The playbooks provide supporting detail when the task touches a specific engineering area.
+
+## Install Profiles
+
+`minimal` installs:
+- `AGENTS.md`
+
+`standard` installs:
+- `AGENTS.md`
+- `docs/playbooks/`
+
+Preview what will be copied:
+
+```powershell
+.\scripts\install-profile.ps1 -TargetRepo D:\Dev\repos\YourProject -Profile standard -WhatIf
+```
+
+Install the standard profile:
+
+```powershell
+.\scripts\install-profile.ps1 -TargetRepo D:\Dev\repos\YourProject -Profile standard
+```
+
+The installer copies files only. It does not delete existing files. If your project already has an `AGENTS.md`, review the diff before committing.
 
 ## Architecture
 
