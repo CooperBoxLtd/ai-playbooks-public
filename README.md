@@ -112,3 +112,7 @@ Copyright 2026 CooperBox Ltd.
 Licensed under the Apache License, Version 2.0. See `LICENSE`.
 
 CooperBox names, logos, and trademarks are not licensed except as required to describe the origin of the work.
+
+## DevSecOps adoption
+
+See the [current adoption record](DEVSECOPS.md) for applicable controls, qualification evidence and remaining gaps. Historical security baselines remain dated reference material.

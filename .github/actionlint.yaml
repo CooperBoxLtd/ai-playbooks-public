@@ -1,0 +1,2 @@
+self-hosted-runner:
+  labels: [ml30, forge-ml30, reblix-ml30, jml360, jml360-ml30]
