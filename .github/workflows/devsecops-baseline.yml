@@ -1,0 +1,39 @@
+name: DevSecOps baseline
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: devsecops-baseline-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  baseline:
+    name: DevSecOps baseline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.3'
+      - name: Verify immutable action inputs and supported runtimes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/scripts/verify-action-runtimes.mjs
+      - name: Check patch formatting
+        run: git show --format= --check HEAD
+      - name: Verify policy rejects unsafe executable inputs
+        run: node --test .github/scripts/verify-action-runtimes.test.mjs
+      - name: Validate current documentation and workflow syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .github/scripts/validate-documents.mjs
+          curl --fail --silent --show-error --location --retry 3 https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz --output "$RUNNER_TEMP/actionlint.tar.gz"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint"
